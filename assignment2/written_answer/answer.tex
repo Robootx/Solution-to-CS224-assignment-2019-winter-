@@ -1,0 +1,97 @@
+\documentclass[a4paper]{article}
+
+% \newcommand{\numpy}{{\tt numpy}}    % tt font for numpy
+\topmargin -.5in
+\textheight 9in
+\oddsidemargin -.25in
+\evensidemargin -.25in
+\textwidth 7in
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amsfonts}
+
+\begin{document}
+
+% title 
+\author{Mhttx}
+\title{Solution to cs224 assignment2(written)}
+\maketitle
+
+\medskip
+
+\section{Notations}
+\begin{enumerate}
+	\item $d:$ Vector dimension
+	\item $n:$ Vocabulary size
+	\item $\mathbf{U} \in \mathbb{R}^{d \times n}:$ The colums of $\mathbf{U}$ are all the 'outside' vectors $\mathbf{u}_{w} \in \mathbb{R}^{d \times 1}$
+
+	\item $\mathbf{V} \in \mathbb{R}^{d \times n}:$ The columms of $\mathbf{V}$ are all the 'center' vector $\mathbf{v}_w \in \mathbb{R}^{d \times 1}$
+
+	\item $\mathbf{y}, \mathbf{\hat{y}}:$ The true and predicted distribution 
+\end{enumerate}
+
+$$\mathbf{z}=\mathbf{U}^{\mathsf{T}}\mathbf{v}_c \in \mathbb{R}^{n \times 1}$$
+$$\mathbf{\hat{y}}=softmax(\mathbf{z}) \in \mathbb{R}^{n \times 1}$$
+$$J_{naive\_softmax}=CE(\mathbf{y, \hat{y}})$$
+
+\begin{equation}
+\mathbf{\delta} = \frac{\partial{J_{native\_softmax}}}{\partial{\mathbf{z}}}=(\mathbf{\hat{y}-y})^{\mathsf{T}} \in \mathbb{R}^{1 \times n}
+\end{equation}
+\section{Answers}
+\begin{enumerate}
+	\item 
+	Answer to 1-(b)
+	\begin{equation}
+	\frac{\partial{J_{native\_softmax}}}{\partial{\mathbf{v}_c}}=(\mathbf{\hat{y}-y})^{\mathsf{T}}\mathbf{U}^{\mathsf{T}} \in \mathbb{R}^{1 \times d}
+	\end{equation}
+
+	\item 
+	Answer to 1-(c)
+	\begin{equation}
+	\frac{\partial{J_{native\_softmax}}}{\partial{\mathbf{U}}}=\delta \frac{\partial \mathbf{z}}{\partial \mathbf{U}} = (\delta^{\mathsf{T}} \mathbf{v}^{\mathsf{T}}_c)^\mathsf{T}=\mathbf{v}_c \delta = \mathbf{v}_c (\mathbf{\hat{y}-\mathbf{y}})^{\mathsf{T}} \in \mathbb{R}^{d \times n}
+	\end{equation}
+
+	\item
+	Answer to 1-(d)
+
+	\begin{equation}
+	\sigma'(\mathbf{x})=\sigma(\mathbf{x}) \circ (1-\sigma(\mathbf{x}))
+	\end{equation}
+
+	\item 
+	Answer to 1-(e)
+
+	\begin{equation}
+	\begin{split}
+	\frac{\partial{J_{neg\_sample}}}{\partial{\mathbf{v}_c}} = &-\frac{\sigma'(\mathbf{u}_o^{\mathsf{T}}\mathbf{v}_c)}{\sigma(\mathbf{u}_o^{\mathsf{T}}\mathbf{v}_c)}\frac{\partial (\mathbf{u}_o^{\mathsf{T}} \mathbf{v}_c)}{\partial \mathbf{v}_c} - \sum_{k=1}^{K}\frac{\sigma'(-\mathbf{u}_k^{\mathsf{T}}\mathbf{v}_c)}{\sigma(-\mathbf{u}_k^{\mathsf{T}}\mathbf{v}_c)}\frac{\partial (-\mathbf{u}_k^{\mathsf{T}} \mathbf{v}_c)}{\partial \mathbf{v}_c}\\
+	= & -(1-\sigma(\mathbf{u}_o^{\mathsf{T}}\mathbf{v}_c))\mathbf{u}_o^{\mathsf{T}} + \sum_{k=1}^{K}(1-\sigma(-\mathbf{u}_k^{\mathsf{T}}\mathbf{v}_c))\mathbf{u}_k^{\mathsf{T}}
+	\end{split}
+	\end{equation}
+
+	\begin{equation}
+	\begin{split}
+	\frac{\partial{J_{neg\_sample}}}{\partial{\mathbf{u}_o}} = &-(1-\sigma(\mathbf{u}_o^{\mathsf{T}}\mathbf{v}_c))\mathbf{v}_{c}^{\mathsf{T}}
+	\end{split}
+	\end{equation}
+
+	\begin{equation}
+	\begin{split}
+	\frac{\partial{J_{neg\_sample}}}{\partial{\mathbf{u}_k}} = &(1-\sigma(-\mathbf{u}_k^{\mathsf{T}}\mathbf{v}_c))\mathbf{v}_{c}^{\mathsf{T}}
+	\end{split}
+	\end{equation}
+
+	Computing of $J_{naive\_softmax}$ needs the inner product between $\mathbf{v}_c$ and all $n$ vocabulary vectors, while $J_{neg\_sample}$ only $k+1$ vectors.
+	\item
+	Answer to 1-(f)
+
+	\begin{equation}
+	\frac{\partial J_{skip\_gram}(\mathbf{v}_c, w_{t-m},...,w_{t+m}, \mathbf{U})}{\partial \mathbf{U}} = \sum_{-m \leq j \leq m, j \neq 0} \frac{\partial J(\mathbf{v}_c, w_{t+j}, \mathbf{U})}{\partial \mathbf{U}}
+	\end{equation}
+	\begin{equation}
+	\frac{\partial J_{skip\_gram}(\mathbf{v}_c, w_{t-m},...,w_{t+m}, \mathbf{U})}{\partial \mathbf{v}_c} = \sum_{-m \leq j \leq m, j \neq 0} \frac{\partial J(\mathbf{v}_c, w_{t+j}, \mathbf{U})}{\partial \mathbf{v}_c}
+	\end{equation}
+
+	\begin{equation}
+	\frac{\partial J_{skip\_gram}(\mathbf{v}_c, w_{t-m},...,w_{t+m}, \mathbf{U})}{\partial \mathbf{v}_w} = 0  \quad when \quad w \neq c
+	\end{equation}
+\end{enumerate}
+\end{document}
