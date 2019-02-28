@@ -1,0 +1,74 @@
+\documentclass[a4paper]{article}
+
+% \newcommand{\numpy}{{\tt numpy}}    % tt font for numpy
+\topmargin -.5in
+\textheight 9in
+\oddsidemargin -.25in
+\evensidemargin -.25in
+\textwidth 7in
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{amsfonts}
+
+\begin{document}
+
+% title 
+\author{Mhttx}
+\title{Solution to cs224 assignment3(written)}
+\maketitle
+
+\medskip
+\section{Machine Learning and  Neural Networks}
+\begin{enumerate}
+	\item a(i): 
+
+	Momentum $m$ is the exponential smothing of gradients, hence reduce the variance;
+
+	Momentum term increases for the dimensions whose gradients point in the same direction and reduces updates for dimensions whose gradients change directions, result in faster convergence and reduced oscillatin; avoiding getting trapped in their numerous suboptimal local minima(where gradient is 0)
+
+	\item a(ii): 
+
+	Parameters updated infrequently get large updates; 
+
+	Adam computes adaptive learning rates for each parameter, which enable us to update parameters according their crrosponding featrue's frenquencies, ie. perform a larger update for rarely occurring features and relative smaller update for frequently occurring features.
+
+	\item b(i): $$\mathbb{E}_{p_{drop}}[\mathbf{h}_{drop}]_i=\gamma (1-p_{drop})h_i=h_i \Rightarrow \gamma = \frac{1}{1-p_{drop}}$$
+
+	\item b(ii) 
+
+	Dropout can be viewed as model ensembling, we train a single model with dropout and ensemble them during evaluation by not applying dropout. 
+\end{enumerate}
+
+\section{Neural Transition-Based Dependency}
+\begin{enumerate}
+	\item (a):\\
+	\begin{tabular}{l|l|l|l}
+	Stack & Buffer & New dependency & Transition\\
+	\hline
+	[ROOT] & [I, parsed, this, sentence, correctly] &   & Initial Configuration \\
+	% \hline 
+
+	[ROOT, I] & [parsed, this, sentence, correctly] &  & SHIFT \\
+
+	[ROOT, I, parsed] & [this, sentence, correctly] &  & SHIFT \\
+
+	[ROOT, parsed] & [this, sentence, correctly] &parsed $\rightarrow$ I & LEFT-ARC \\
+
+	[ROOT, parsed, this] & [sentence, correctly] & & SHIFT \\
+
+	[ROOT, parsed, this, sentence] & [correctly] & & SHIFT \\
+
+	[ROOT, parsed, sentence] & [correctly] &sentence $\rightarrow$ this & LEFT-ARC \\
+
+	[ROOT, parsed] & [correctly] &parsed $\rightarrow$ sentence & RIGHT-ARC \\
+
+	[ROOT, parsed, correctly] & [] & & SHIFT \\
+
+	[ROOT, parsed] & [] &correctly $\rightarrow$ parsed & LEFT-ARC \\
+
+	[ROOT] & [] &parsed $\rightarrow$ ROOT & LEFT-ARC \\
+	\end{tabular}
+
+	\item (b):\\
+	$2n$ steps, $n$ steps for SHIFT words into stack and $n$ *-ARC (RIGHT-ACR or LEFT-ARC) steps for moving words out from stack.
+\end{enumerate}
+\end{document}
